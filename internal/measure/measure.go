@@ -3,6 +3,7 @@ package measure
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"log/slog"
@@ -12,14 +13,14 @@ import (
 )
 
 // commandRunner is used to inject a Runner so that NewCmdMeasure can be tested.
-type commandRunner func(args []string, w io.Writer) error
+type commandRunner func(ctx context.Context, args []string, w io.Writer) error
 
 // Option defines a functional configuration option for the measure command.
 type Option func(*measureOptions)
 
 // WithRunner is a functional option for testing purposes.
 // It overrides the command runner.
-func WithRunner(r func([]string, io.Writer) error) Option {
+func WithRunner(r func(ctx context.Context, args []string, w io.Writer) error) Option {
 	return func(o *measureOptions) { o.runner = r }
 }
 
@@ -80,7 +81,7 @@ func runMeasure(cmd *cobra.Command, opts *measureOptions, args []string) error {
 	var buf bytes.Buffer
 
 	// Duplicate output to both terminal and buffer
-	if err := opts.runner(args, &buf); err != nil {
+	if err := opts.runner(cmd.Context(), args, &buf); err != nil {
 		return fmt.Errorf("command execution failed: %w", err)
 	}
 

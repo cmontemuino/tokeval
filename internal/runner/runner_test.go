@@ -2,6 +2,7 @@ package runner_test
 
 import (
 	"bytes"
+	"context"
 	"testing"
 
 	"github.com/cmontemuino/tokeval/internal/runner"
@@ -26,21 +27,27 @@ func TestRun(t *testing.T) {
 			want:    "",
 			wantErr: true,
 		},
+		{
+			name:    "empty args",
+			args:    []string{},
+			want:    "",
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			var buf bytes.Buffer
-			err := runner.Run(tt.args, &buf)
+			err := runner.Run(context.Background(), tt.args, &buf)
 
 			if (err != nil) != tt.wantErr {
-				t.Fatalf("Runner() error = %v, wantErr %v", err, tt.wantErr)
+				t.Fatalf("Run() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
 			if !tt.wantErr {
 				got := buf.String()
 				if got != tt.want {
-					t.Errorf("Runner() got = %q, want %q", got, tt.want)
+					t.Errorf("Run() got = %q, want %q", got, tt.want)
 				}
 			}
 		})

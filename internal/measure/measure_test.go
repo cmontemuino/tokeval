@@ -2,6 +2,7 @@ package measure_test
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"strings"
 	"testing"
@@ -11,7 +12,7 @@ import (
 
 func TestNewCmdMeasure(t *testing.T) {
 	// Mock the runner function
-	mockRunner := func(args []string, w io.Writer) error {
+	mockRunner := func(_ context.Context, _ []string, w io.Writer) error {
 		_, err := w.Write([]byte("hello world"))
 		return err
 	}
